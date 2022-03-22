@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <button id="btn" type="button">按钮</button>
+    </body>
+    <script>
+        class Subject {
+            constructor() {
+                this.state = 0;
+                this.observers = [];
+            }
+            delete(name) {
+                this.observers = this.observers.filters(item => {
+                    item.name !== name;
+                });
+            }
+            add(observer) {
+                this.observers.push(observer);
+            }
+            setState(state) {
+                this.state = state;
+                this.notify();
+            }
+            notify() {
+                this.observers.forEach(observer => {
+                    observer.update(this.state);
+                });
+            }
+            getState() {
+                return this.state;
+            }
+        }
+
+        class Observer {
+            constructor(name, subject) {
+                this.name = name;
+                this.subject = subject;
+                this.subject.add(this);
+            }
+            update(state) {
+                console.log(`state is ${state} in ${this.name}`);
+            }
+        }
+
+        const subject = new Subject();
+        const observer1 = new Observer('observer1', subject);
+        const observer2 = new Observer('observer2', subject);
+
+        document.querySelector('#btn').addEventListener('click', () => {
+            subject.setState(Math.random());
+        });
+    </script>
+</html>

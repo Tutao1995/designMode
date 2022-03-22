@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <button id="btn" type="button">按钮</button>
+    </body>
+    <script>
+        class Event {
+            constructor() {
+                this.listenList = {};
+            }
+            listen(key, fn) {
+                if (!this.listenList[key]) {
+                    this.listenList[key] = [];
+                }
+                this.listenList[key].push(fn);
+            }
+            trigger() {
+                const name = Array.prototype.shift.call(arguments);
+                const fns = this.listenList[name];
+                if (!name || !fns) {
+                    return false;
+                }
+                if (!fns.length) return false;
+                fns.forEach(fn => {
+                    fn.apply(this, arguments);
+                });
+            }
+            remove(key, func) {
+                const fns = this.listenList[key];
+                if (!fns) {
+                    return false;
+                }
+                if (!fns.length) return false;
+                for (let i = fns.length; i >= 0; i--) {
+                    const fn = fns[i];
+                    if (fn === func) {
+                        fns.splice(i, 1);
+                    }
+                }
+            }
+        }
+        const ev = new Event();
+        ev.listen('test', value => {
+            console.log(`listenning value is ${value}`);
+        });
+        const a = 1;
+        document.querySelector('#btn').addEventListener('click', () => {
+            ev.trigger('test', Math.random());
+            try {
+                a = 'dfdf';
+            } catch (e) {
+                console.log(e, 'e', typeof e, JSON.stringify(e));
+            }
+        });
+    </script>
+</html>
